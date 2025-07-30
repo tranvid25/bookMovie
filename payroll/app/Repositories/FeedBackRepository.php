@@ -29,11 +29,11 @@ class FeedBackRepository
     }
     public function update(FeedBack $feedBack,array $data)
     {
-        return $this->$feedBack->update($data);
+        return $feedBack->update($data);
     }
     public function delete(FeedBack $feedBack)
     {
-        return $this->$feedBack->delete();
+        return $feedBack->delete();
     }
 
 }

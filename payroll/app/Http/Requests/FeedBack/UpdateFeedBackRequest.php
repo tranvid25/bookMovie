@@ -22,7 +22,11 @@ class UpdateFeedBackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => 'required|email',
+            'tieuDe' => 'nullable|string',
+            'noiDung' => 'nullable|string',
+            'ngayXuLy' => 'nullable|date',
+            'noiDungXuLy' => 'nullable|string',
         ];
     }
 }

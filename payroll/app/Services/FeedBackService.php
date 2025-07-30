@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Mail;
 class FeedBackService
 {
     protected $FeedBackReposity;
-    public function __contruct(FeedBackRepository $FeedBackReposity){
+    public function __construct(FeedBackRepository $FeedBackReposity){
       $this->FeedBackReposity=$FeedBackReposity;
     }
     public function getAll(){
@@ -33,7 +33,7 @@ class FeedBackService
                 $message->to($data['email'])->subject('Thông tin feedback');
             });
         }
-        return $this->FeedBackReposity->update($FeedBack,$data);
+        return $this->FeedBackReposity->update($id,$data);
     }
     public function delete($id){
         $FeedBack=$this->FeedBackReposity->find($id);

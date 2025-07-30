@@ -22,7 +22,9 @@ class StoreFeedBackRequest extends FormRequest
     public function rules(): array
     {
         return [
-           
+           'email' => 'required|email',
+            'tieuDe' => 'required|string',
+            'noiDung' => 'required|string',
         ];
     }
 }
