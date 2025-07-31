@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\FeedBack;
+namespace App\Http\Requests\Movie;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateFeedBackRequest extends FormRequest
+class UpdateMovieRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,7 @@ class UpdateFeedBackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'tieuDe' => 'nullable|string',
-            'noiDung' => 'nullable|string',
-            'ngayXuLy' => 'nullable|date',
-            'noiDungXuLy' => 'nullable|string',
+            //
         ];
     }
 }
