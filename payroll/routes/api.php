@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Route;
             Route::post('laydanhsachbanner/{id}/update', [BannerController::class, 'update']);
             Route::delete('laydanhsachbanner/{id}/delete', [BannerController::class, 'destroy']);
 
-       
+
         //Review movie;
         //FeedBack
         Route::get('laydanhsachfeedback', [FeedBackController::class, 'index']);
@@ -94,7 +94,10 @@ use Illuminate\Support\Facades\Route;
         Route::delete('laydanhsachrap/{id}/delete', [RapChieuController::class, 'destroy']);
         //Tỉnh
         Route::get('laydanhsachtinh', [ProvinceController::class, 'index']);
+        Route::get('laydanhsachtinh/{id}', [ProvinceController::class, 'show']);
         Route::post('laydanhsachtinh', [ProvinceController::class, 'store']);
+        Route::post('laydanhsachtinh/{id}/update', [ProvinceController::class, 'update']);
+        Route::delete('laydanhsachtinh/{id}/delete', [ProvinceController::class, 'destroy']);
         //Search
         Route::get('/movies/search', [MovieController::class, 'search']);
 

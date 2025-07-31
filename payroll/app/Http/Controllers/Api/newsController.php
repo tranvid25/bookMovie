@@ -30,11 +30,18 @@ class newsController extends Controller
     ]);
    }
    public function show($id){
-    $new=$this->servie->findByNew($id);
-    return response()->json([
-        'status'=>200,
-        'content'=>$new
-    ]);
+    try {
+        $new = $this->servie->findByNew($id);
+        return response()->json([
+            'status' => 200,
+            'content' => $new
+        ]);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'New not found'
+        ]);
+    }
    }
    public function store(NewRequest $request){
     $data = $request->validated();
