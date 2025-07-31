@@ -3,106 +3,114 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RapChieu\RapChieuRequest;
 use App\Models\RapChieu;
+use App\Services\RapChieuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPSTORM_META\map;
+
 class RapChieuController extends Controller
 {
+    protected $service;
+    public function __construct(RapChieuService $service)
+    {
+        $this->service=$service;
+
+    }
     public function index(){
-        $rapchieu=RapChieu::with('tinhThanh')->get();
-        if($rapchieu){
+        try {
+            $rapChieu=$this->service->getTinh();
+            if(!$rapChieu){
+                return response()->json([
+                    'status'=>404,
+                    'message'=>'Rapchieu not found'
+                ]);
+            }else{
+                return response()->json([
+                    'status'=>201,
+                    'message'=>'successfully!',
+                    'content'=>$rapChieu
+                ]);
+            }
+        } catch (\Throwable $th) {
             return response()->json([
-                'status'=>200,
-                'content'=>$rapchieu
-            ]);
-        }
-        else{
-            return response()->json([
-                'status'=>400,
-                'message'=>'Not found'
+                'status'=>500,
+                'message'=>'Get Failed!',
+                'error'=>$th->getMessage()
             ]);
         }
     }
-    public function store(Request $request){
-        $data=$request->all();
-        $rapchieu=RapChieu::create($data);
-        if($rapchieu){
+    public function store(RapChieuRequest $request){
+        try {
+            $rapChieu=$this->service->create($request->validated());
             return response()->json([
-                'status'=>200,
-                'message'=>'create successfully!'
+                'status'=>201,
+                'message'=>'create successfully',
+                'data'=>$rapChieu
             ]);
-        }
-        else
-        {
+
+        } catch (\Throwable $th) {
             return response()->json([
                 'status'=>500,
-                'message'=>'Something went wreong'
+                'message'=>'create failed',
+                'error'=>$th->getMessage()
             ]);
         }
     }
     public function show($id){
-        $rapchieu=RapChieu::findOrFail($id);
-        if($rapchieu){
+        try {
+            $rapChieu=$this->service->find($id);
+            if(!$rapChieu){
+                return response()->json([
+                    'status'=>404,
+                    'message'=>'Rapchieu not found'
+                ]);
+            }else{
+                return response()->json([
+                    'status'=>201,
+                    'message'=>'successfully!',
+                    'content'=>$rapChieu
+                ]);
+            }
+        } catch (\Throwable $th) {
             return response()->json([
-                'status'=>200,
-                'content'=>$rapchieu
-            ]);
-        }
-        else
-        {
-            return response()->json([
-                'status'=>404,
-                'message'=>'not founđ rap'
+                'status'=>500,
+                'message'=>'Get Failed!',
+                'error'=>$th->getMessage()
             ]);
         }
     }
-    public function update(Request $request,string $id){
-        $validator=Validator::make($request->all(),[
-            'tenRap'=>'required|string|max:100',
-            'diaChi'=>'required|string|max:200',
-            'maTinh_id'=>'nullable'
+    public function update(RapChieuRequest $request,string $id){
+       try {
+        $rapChieu=$this->service->update($id,$request->validated());
+        return response()->json([
+            'status'=>201,
+            'message'=>'Update Successfully!',
+            'data'=>$rapChieu
         ]);
-        if($validator->fails()){
-           return response()->json([
-            'status'=>422,
-            'message'=>$validator->errors()
-           ]);
-        }
-        $rapchieu=RapChieu::findOrFail($id);
-        if($rapchieu){
-           $rapchieu->update([
-            'tenRap'=>$request->tenRap,
-            'diaChi'=>$request->diaChi,
-            'maTinh_id'=>$request->maTinh_id
-           ]);
-           return response()->json([
-            'status'=>200,
-            'message'=>'update successfully'
-           ]);
-        }
-        else{
-            return response()->json([
-                'status'=>404,
-                'message'=>'no such thetre found',
-            ]);
-        }
+       } catch (\Throwable $th) {
+        return response()->json([
+            'status'=>500,
+            'message'=>'Update Failed',
+            'error'=>$th->getMessage()
+        ]);
+       }
     }
     public function destroy($id){
-        $rapchieu=RapChieu::findOrFail($id);
-        if($rapchieu){
-            $rapchieu->delete();
+        try {
+            $rapChieu=$this->service->delete($id);
             return response()->json([
-                'status'=>200,
-                'message'=>'delete successfully!'
-            ]);
-        }
-        else
-        {
-            return response()->json([
-                'status'=>404,
-                'message'=>'delete fail'
-            ]);
-        }
+            'status'=>201,
+            'message'=>'Delete Successfully!',
+        ]);
+       } catch (\Throwable $th) {
+        return response()->json([
+            'status'=>500,
+            'message'=>'Delete Failed',
+            'error'=>$th->getMessage()
+        ]);
+       }
     }
 }
