@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Movie;
 use App\Models\OrderDetail;
+use App\Models\PointHistory;
 use App\Models\Seat;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -50,7 +52,6 @@ class OrderDetailController extends Controller
     $validator = Validator::make($request->all(), [
         'maLichChieu' => 'required|exists:showtime,maLichChieu',
         'danhSachGhe' => 'required|string', // chuỗi dạng: "101,102,103"
-        'userId' => 'nullable|exists:users,id',
         'name' => 'required|string|max:255',
         'email' => 'required|email',
     ]);
@@ -69,6 +70,18 @@ class OrderDetailController extends Controller
         if (!$showtime || !$showtime->rapChieu || !$showtime->phim) {
             DB::rollBack();
             return response()->json(['status' => 404, 'message' => 'Không tìm thấy lịch chiếu'], 404);
+        }
+
+        // Kiểm tra lịch chiếu có phải trong tương lai không
+        $ngayGioChieu = $showtime->ngayChieu . ' ' . $showtime->gioChieu;
+        $ngayGioHienTai = now();
+        
+        if (strtotime($ngayGioChieu) <= strtotime($ngayGioHienTai)) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 400, 
+                'message' => 'Không thể đặt vé cho lịch chiếu đã qua hoặc đang diễn ra'
+            ], 400);
         }
 
         $arrMaGhe = array_map('intval', explode(',', $request->danhSachGhe));
@@ -101,14 +114,46 @@ class OrderDetailController extends Controller
             'ngayChieu' => $showtime->ngayChieu,
             'danhSachGhe' => $danhSachTenGhe,
             'tongTien' => $tongTien,
-            'userId' => $request->userId,
+            'userId' => Auth::id(),
             'name' => $request->name,
             'email' => $request->email,
         ]);
 
         // Đánh dấu ghế đã đặt
         Seat::whereIn('maGhe', $arrMaGhe)->update(['daDat' => 1]);
+        if(Auth::check())
+        {
+            $user=Auth::user();
+            if($user) {
+                $diemCong=floor($tongTien/10000);//10,000đ =1 điểm
+                // Đảm bảo diem_tich_luy không null
+                $user->diem_tich_luy = $user->diem_tich_luy ?? 0;
+                $user->diem_tich_luy += $diemCong;
+                
+                //Cập nhật rank
+                if($user->diem_tich_luy >=3000)
+                {
+                    $user->rank='kimcuong';
+                }elseif($user->diem_tich_luy>=1500)
+                {
+                    $user->rank='vang';
+                }elseif($user->diem_tich_luy>=500)
+                {
+                    $user->rank='bac';
+                }
+                else{
+                    $user->rank='thuong';
+                }
 
+                $user->save();
+                PointHistory::create([
+                    'id_user' => $user->id,
+                    'loai' => '+',
+                    'so_diem' => $diemCong,
+                    'mo_ta' => 'Đặt vé phim ' . $showtime->phim->tenPhim,
+                ]);
+            }
+        }
         DB::commit(); // ✅ Quan trọng: commit sau khi xong mọi thứ
 
         Mail::send('mail.sendEmail', [
@@ -122,7 +167,7 @@ class OrderDetailController extends Controller
         'email' => $request->email,
     ], function ($message) use ($request) {
         $message->to($request->email, $request->name)
-                ->subject('PHTV - Thông tin đặt vé');
+                ->subject('TV - Thông tin đặt vé');
     });
         return response()->json([
             'status' => 200,

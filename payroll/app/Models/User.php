@@ -25,7 +25,9 @@ class User extends Authenticatable
         'password',
         'role',
         'avatar',
-        'fileName'
+        'fileName',
+        'diem_tich_luy',
+        'rank'
     ];
 
     /**
@@ -47,4 +49,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function pointHistory()
+    {
+       return $this->hasMany(PointHistory::class, 'id_user');
+    }
+
+    public function rewardExchanges()
+    {
+        return $this->hasMany(RewardExchange::class, 'user_id');
+    }
 }

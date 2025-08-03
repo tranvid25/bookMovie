@@ -26,6 +26,17 @@ class ShowTimeService
     }
     public function createWithSeats(array $data)
     {
+        // Kiểm tra lịch chiếu có phải trong tương lai không
+        $ngayGioChieu = $data['ngayChieu'] . ' ' . $data['gioChieu'];
+        $now = now();
+        
+        if (strtotime($ngayGioChieu) <= strtotime($now)) {
+            return [
+                'status' => 400,
+                'message' => 'Không thể tạo lịch chiếu cho thời gian đã qua',
+            ];
+        }
+
         $showtime = $this->repo->create($data);
 
         if (!$showtime) {
