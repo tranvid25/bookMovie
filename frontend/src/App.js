@@ -57,6 +57,7 @@ import TermsOfTransaction from './pages/Terms/TermsOfTransaction';
 import ForgetPassword from './pages/Login/ForgetPassword';
 import Chat from './pages/Chat/Chat';
 import NotificationMng from './pages/Admin/NotificationMng/NotificationMng';
+import Rewards from './pages/Rewards/Rewards';
 
 
 export const history = createBrowserHistory();
@@ -98,6 +99,7 @@ function App() {
         <ProfileTemplate path='/users/profile' exact Component={Profile} />
         <ProfileTemplate path='/users/edit/:id' exact Component={UserEdit} />
         <ProfileTemplate path='/users/ordershistory' exact Component={OrderHistory} />
+        <ProfileTemplate path='/rewards' exact Component={Rewards} />
 
         {/* Nguoi dung - user */}
         <AdminTemplate path='/admin' exact Component={UserMng} />

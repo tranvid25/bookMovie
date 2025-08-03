@@ -12,10 +12,12 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PromotionNotificationController;
 use App\Http\Controllers\Api\ProvinceController;
 use App\Http\Controllers\Api\RapChieuController;
+use App\Http\Controllers\Api\RewardController;
 use App\Http\Controllers\Api\SeatController;
 use App\Http\Controllers\Api\ShowtimeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\EmployeeController;
+
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,11 +40,11 @@ use Illuminate\Support\Facades\Route;
         Route::post('laydanhsachuser/{id}/update', [UserController::class, 'update']);
         //Banner
 
-            Route::get('laydanhsachbanner', [BannerController::class, 'index']);
-            Route::post('laydanhsachbanner', [BannerController::class, 'store']);
-            Route::get('laydanhsachbanner/{id}', [BannerController::class, 'show']);
-            Route::post('laydanhsachbanner/{id}/update', [BannerController::class, 'update']);
-            Route::delete('laydanhsachbanner/{id}/delete', [BannerController::class, 'destroy']);
+        Route::get('laydanhsachbanner', [BannerController::class, 'index']);
+        Route::post('laydanhsachbanner', [BannerController::class, 'store']);
+        Route::get('laydanhsachbanner/{id}', [BannerController::class, 'show']);
+        Route::post('laydanhsachbanner/{id}/update', [BannerController::class, 'update']);
+        Route::delete('laydanhsachbanner/{id}/delete', [BannerController::class, 'destroy']);
 
 
         //Review movie;
@@ -133,5 +135,15 @@ use Illuminate\Support\Facades\Route;
         Route::put('notification/{id}/read',[PromotionNotificationController::class,'markAsRead']);
         //Order
         Route::get('laydanhsachdonhang/{id}', [OrderDetailController::class, 'showByUser']);
+        //Rewards - Đổi điểm lấy quà
+        Route::get('rewards', [RewardController::class, 'index']);
+        Route::get('rewards/{id}', [RewardController::class, 'show']);
+        Route::post('rewards/exchange', [RewardController::class, 'exchange']);
+        Route::get('rewards/user/exchanges', [RewardController::class, 'userExchanges']);
+        // Test API - chỉ dùng cho development
+        Route::post('add-test-points', [AuthController::class, 'addTestPoints']);
+        Route::get('laydanhsachdonhang', [OrderDetailController::class, 'index']);
+        Route::post('laydanhsachdonhang', [OrderDetailController::class, 'store']);
+        Route::get('laychitietdonhang/{id}', [OrderDetailController::class, 'show']);
     });
 });
