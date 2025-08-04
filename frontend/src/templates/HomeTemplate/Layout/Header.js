@@ -86,8 +86,8 @@ export default function Header(props) {
                 <div className="container flex justify-between h-16 mx-auto">
                     <NavLink rel="noopener noreferrer" to="/" aria-label="Back to homepage" className="flex items-center p-2">
                         <div className='d-flex' >
-                            <img src='/img/logo.png' alt='logo' style={{ width: '50px', height: '100%' }} />
-                            <img src='/img/name.png' alt='logo' style={{ width: '100px', height: '100%' }} />
+                            <img src='/img/logo.png' alt='logo' style={{ width: '150px', height: '100%',paddingRight:'5px',borderRadius: '10px' }} />
+                            <img src='/img/name.png' alt='logo' style={{ width: '100px', height: '100%',borderRadius: '10px' }} />
                         </div>
                     </NavLink>
                     <ul className="items-stretch hidden space-x-3 lg:flex ml-20">
