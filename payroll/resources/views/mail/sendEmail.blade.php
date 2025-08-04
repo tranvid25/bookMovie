@@ -12,11 +12,11 @@
     <div style=" background-color:rgb(174, 174, 174)">
         <div style="padding-top: 20px; opacity: 0.8; text-align: center">
             <span style="font-size: 40px">
-                <img style="width: 70px" src="{{ $message->embed('images/logo.png') }}">
+                <img style="width: 70px" src="{{ $message->embed(public_path('images/logo.png')) }}">
 
             </span>
             <span style="font-size: 40px">
-                <img style="width: 130px" src="{{ $message->embed('images/name.png') }}">
+                <img style="width: 130px" src="{{ $message->embed(public_path('images/name.png')) }}">
 
             </span>
 

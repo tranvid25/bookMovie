@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\SeatController;
 use App\Http\Controllers\Api\ShowtimeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\EmployeeController;
-
+use App\Jobs\SendTestMessageJob;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +34,13 @@ use Illuminate\Support\Facades\Route;
 */
 
         //user
+
+
+    Route::get('/test-rabbitmq', function () {
+    SendTestMessageJob::dispatch('Hello from RabbitMQ!');
+    return 'Job sent!';
+});
+
         Route::get('laydanhsachuser', [UserController::class, 'index']);
         Route::get('laydanhsachuser/{id}', [UserController::class, 'show']);
         Route::post('laydanhsachuser', [UserController::class, 'store']);

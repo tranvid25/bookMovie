@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessAfterBookingJob;
 use App\Models\Movie;
 use App\Models\OrderDetail;
 use App\Models\PointHistory;
@@ -75,11 +76,11 @@ class OrderDetailController extends Controller
         // Kiểm tra lịch chiếu có phải trong tương lai không
         $ngayGioChieu = $showtime->ngayChieu . ' ' . $showtime->gioChieu;
         $ngayGioHienTai = now();
-        
+
         if (strtotime($ngayGioChieu) <= strtotime($ngayGioHienTai)) {
             DB::rollBack();
             return response()->json([
-                'status' => 400, 
+                'status' => 400,
                 'message' => 'Không thể đặt vé cho lịch chiếu đã qua hoặc đang diễn ra'
             ], 400);
         }
@@ -121,54 +122,8 @@ class OrderDetailController extends Controller
 
         // Đánh dấu ghế đã đặt
         Seat::whereIn('maGhe', $arrMaGhe)->update(['daDat' => 1]);
-        if(Auth::check())
-        {
-            $user=Auth::user();
-            if($user) {
-                $diemCong=floor($tongTien/10000);//10,000đ =1 điểm
-                // Đảm bảo diem_tich_luy không null
-                $user->diem_tich_luy = $user->diem_tich_luy ?? 0;
-                $user->diem_tich_luy += $diemCong;
-                
-                //Cập nhật rank
-                if($user->diem_tich_luy >=3000)
-                {
-                    $user->rank='kimcuong';
-                }elseif($user->diem_tich_luy>=1500)
-                {
-                    $user->rank='vang';
-                }elseif($user->diem_tich_luy>=500)
-                {
-                    $user->rank='bac';
-                }
-                else{
-                    $user->rank='thuong';
-                }
-
-                $user->save();
-                PointHistory::create([
-                    'id_user' => $user->id,
-                    'loai' => '+',
-                    'so_diem' => $diemCong,
-                    'mo_ta' => 'Đặt vé phim ' . $showtime->phim->tenPhim,
-                ]);
-            }
-        }
+        ProcessAfterBookingJob::dispatch($order, Auth::user());
         DB::commit(); // ✅ Quan trọng: commit sau khi xong mọi thứ
-
-        Mail::send('mail.sendEmail', [
-        'rapChieu' => $showtime->rapChieu->tenRap,
-        'phim' => $showtime->phim->tenPhim,
-        'gioChieu' => $showtime->gioChieu,
-        'ngayChieu' => $showtime->ngayChieu,
-        'danhSachGhe' => $danhSachTenGhe,
-        'tongTien' => $tongTien,
-        'name' => $request->name,
-        'email' => $request->email,
-    ], function ($message) use ($request) {
-        $message->to($request->email, $request->name)
-                ->subject('TV - Thông tin đặt vé');
-    });
         return response()->json([
             'status' => 200,
             'message' => 'Đặt vé thành công!',
