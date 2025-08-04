@@ -22,7 +22,9 @@ class ProvinceRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'tenTinh'=>'required|string|max:255'
+           'tenTinh'=>'required|string|max:255',
+           'hinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+           'googlemap'=>'nullable|string|max:512'
         ];
     }
 }

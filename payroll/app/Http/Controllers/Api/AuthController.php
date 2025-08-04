@@ -11,6 +11,7 @@ use App\Mail\SendNewPassword;
 use App\Models\User;
 use App\Services\AuthService;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -146,4 +147,59 @@ class AuthController extends Controller
             'new_rank' => $user->rank
         ]);
     }
+    public function loginGoogle(Request $request)
+{
+    try {
+        $request->validate([
+            'id_token' => 'required|string',
+        ]);
+
+        $client = new Client();
+
+        $response = $client->get('https://oauth2.googleapis.com/tokeninfo', [
+            'query' => ['id_token' => $request->id_token],
+        ]);
+
+        $googleUser = json_decode($response->getBody(), true);
+
+        // Debug log
+        
+
+    if (!isset($googleUser['email_verified']) || $googleUser['email_verified'] !== 'true') {
+        return response()->json([
+            'status' => false,
+            'message' => 'Email chưa xác thực'
+        ], 403);
+    }
+
+    $email = $googleUser['email'];
+    $name = $googleUser['name'] ?? explode('@', $email)[0];
+    $avatar = $googleUser['picture'] ?? null;
+
+    $user = User::firstOrCreate(
+        ['email' => $email],
+        [
+            'name' => $name,
+            'avatar' => $avatar,
+            'password' => bcrypt(Str::random(16)),
+            'role' => 'user',
+            'diem_tich_luy' => 0,
+            'rank' => 'thuong',
+        ]
+    );
+
+    $token = $user->createToken('UserToken')->accessToken;
+
+        return response()->json([
+            'status' => true,
+            'token' => $token,
+            'user' => $user,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Lỗi đăng nhập Google: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

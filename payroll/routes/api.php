@@ -107,6 +107,7 @@ use Illuminate\Support\Facades\Route;
     'prefix' => 'auth'
 ], function () {
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('loginGoogle',[AuthController::class,'loginGoogle']);
     Route::post('signup', [AuthController::class, 'signup']);
     Route::post('passwordRetrieval', [AuthController::class, 'passwordRetrieval']);
 

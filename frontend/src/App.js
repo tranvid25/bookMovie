@@ -59,6 +59,8 @@ import Chat from './pages/Chat/Chat';
 import NotificationMng from './pages/Admin/NotificationMng/NotificationMng';
 import Rewards from './pages/Rewards/Rewards';
 import TuDongChatWidget from './components/TuDongChatWidget';
+import Province from './pages/Province/Province';
+import ProvinceDetail from './pages/Province/ProvinceDetail';
 
 
 export const history = createBrowserHistory();
@@ -83,6 +85,9 @@ function App() {
         <HomeTemplate path='/home' exact Component={Home} />
         <HomeTemplate path='/contact' exact Component={Contact} />
         <HomeTemplate path='/news' exact Component={News} />
+        <HomeTemplate path='/rewards' exact Component={Rewards} />
+        <HomeTemplate path='/province' exact Component={Province}/>
+        <HomeTemplate path='/province/detail/:id' exact Component={ProvinceDetail}/>
         <HomeTemplate path='/news/detail/:id' exact Component={NewsDetail} />
         <MovieTemplate path='/detail/:id' exact Component={Detail} />
         <CheckOutTemplate path='/checkout/:id' exact Component={Checkout} />
@@ -101,7 +106,7 @@ function App() {
         <ProfileTemplate path='/users/profile' exact Component={Profile} />
         <ProfileTemplate path='/users/edit/:id' exact Component={UserEdit} />
         <ProfileTemplate path='/users/ordershistory' exact Component={OrderHistory} />
-        <ProfileTemplate path='/rewards' exact Component={Rewards} />
+        {/* <ProfileTemplate path='/rewards' exact Component={Rewards} /> */}
 
         {/* Nguoi dung - user */}
         <AdminTemplate path='/admin' exact Component={UserMng} />
