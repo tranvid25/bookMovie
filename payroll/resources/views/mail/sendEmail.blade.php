@@ -64,10 +64,10 @@
             </table>
         </div>
         <hr style="width: 80%">
-        <div style="text-align: start ; padding-top: 10px">Mọi thắc mắc xin liên hệ: PHTV.datve@gmail.com</div>
+        <div style="text-align: start ; padding-top: 10px">Mọi thắc mắc xin liên hệ: TQV.datve@gmail.com</div>
         <div style="text-align: start ; padding-bottom: 10px">Thông tin tất cả các vé
             tại: http://localhost:3000/users/ordershistory</div>
-        <div style="text-align: end ; padding-top: 10px">PHTV XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ!</div>
+        <div style="text-align: end ; padding-top: 10px">TQV XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ!</div>
 
     </div>
 </body>

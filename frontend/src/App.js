@@ -58,6 +58,7 @@ import ForgetPassword from './pages/Login/ForgetPassword';
 import Chat from './pages/Chat/Chat';
 import NotificationMng from './pages/Admin/NotificationMng/NotificationMng';
 import Rewards from './pages/Rewards/Rewards';
+import TuDongChatWidget from './components/TuDongChatWidget';
 
 
 export const history = createBrowserHistory();
@@ -77,6 +78,7 @@ function App() {
         draggable
         pauseOnHover
       />
+      <TuDongChatWidget/>
       <Switch>
         <HomeTemplate path='/home' exact Component={Home} />
         <HomeTemplate path='/contact' exact Component={Contact} />
