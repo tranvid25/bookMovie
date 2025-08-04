@@ -100,6 +100,9 @@ export default function Header(props) {
                         <li className="flex">
                             <NavLink to="/contact" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Liên Hệ</NavLink>
                         </li>
+                        <li className="flex">
+                            <NavLink to="/province" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Tỉnh Thành</NavLink>
+                        </li>
                         {!_.isEmpty(userLogin) && (
                             <li className="flex">
                                 <NavLink to="/rewards" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Quà Tặng</NavLink>

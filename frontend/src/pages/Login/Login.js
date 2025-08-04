@@ -1,34 +1,31 @@
-import React from 'react'
-import { Button, Checkbox, Form, Input } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { dangNhapAction } from '../../redux/actions/QuanLyNguoiDungAction';
-import { UserReducer } from './../../redux/reducers/UserReducer';
-
+import React from "react";
+import { Button, Checkbox, Form, Input } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  dangNhapAction,
+  dangNhapGoogleAction,
+} from "../../redux/actions/QuanLyNguoiDungAction";
+import { UserReducer } from "./../../redux/reducers/UserReducer";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function Login(props) {
-
   const dispatch = useDispatch();
 
-  const { userLogin } = useSelector(state => state.UserReducer)
-
+  const { userLogin } = useSelector((state) => state.UserReducer);
 
   const onFinish = (values) => {
     const action = dangNhapAction(values);
-    dispatch(action)
+    dispatch(action);
   };
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
 
-
-
   return (
-
-    <div className="py-8 px-8 bg-white rounded-2xl shadow-xl z-20">
-
+    <div className="z-20 px-8 py-8 bg-white shadow-xl rounded-2xl">
       <Form
         name="basic"
-        className='d-flex flex-col'
+        className="flex-col d-flex"
         labelCol={{
           span: 8,
         }}
@@ -38,7 +35,7 @@ export default function Login(props) {
         style={{
           maxWidth: 350,
           width: 350,
-          minWidth: '100%',
+          minWidth: "100%",
         }}
         initialValues={{
           remember: false,
@@ -48,26 +45,33 @@ export default function Login(props) {
         autoComplete="off"
       >
         <div>
-          <h1 className="text-3xl font-bold text-center mb-4 cursor-pointer">Đăng Nhập</h1>
-          <p className="text-center text-sm mb-8 font-semibold text-gray-700 tracking-wide">Đăng nhập để truy cập vào tài khoản của bạn</p>
+          <h1 className="mb-4 text-3xl font-bold text-center cursor-pointer">
+            Đăng Nhập
+          </h1>
+          <p className="mb-8 text-sm font-semibold tracking-wide text-center text-gray-700">
+            Đăng nhập để truy cập vào tài khoản của bạn
+          </p>
         </div>
         <Form.Item
           label=""
           name="email"
-          style={{minWidth: '100%'}}
+          style={{ minWidth: "100%" }}
           rules={[
             {
-              type: 'email',
-              message: 'E-mail chưa đúng định dạng!',
+              type: "email",
+              message: "E-mail chưa đúng định dạng!",
             },
             {
               required: true,
-              message: 'E-mail không được để trống!',
+              message: "E-mail không được để trống!",
               transform: (value) => value.trim(),
             },
           ]}
         >
-          <Input className="block text-sm py-3 px-4 rounded-lg w-full border outline-none" placeholder="Email" />
+          <Input
+            className="block w-full px-4 py-3 text-sm border rounded-lg outline-none"
+            placeholder="Email"
+          />
         </Form.Item>
 
         <Form.Item
@@ -76,34 +80,76 @@ export default function Login(props) {
           rules={[
             {
               required: true,
-              message: 'Password không được để trống!',
+              message: "Password không được để trống!",
               transform: (value) => value.trim(),
             },
           ]}
         >
-          <Input.Password className="d-flex block text-sm py-3 px-4 mt-3 rounded-lg w-full border outline-none" placeholder="Mật khẩu" />
+          <Input.Password
+            className="block w-full px-4 py-3 mt-3 text-sm border rounded-lg outline-none d-flex"
+            placeholder="Mật khẩu"
+          />
         </Form.Item>
 
         <Form.Item
           name="remember"
-          style={{ textAlign: 'left'}}
+          style={{ textAlign: "left" }}
           valuePropName="checked"
           wrapperCol={{
             offset: 0,
             // span: 16,
           }}
         >
-          <div className='d-flex justify-between'>
+          <div className="justify-between d-flex">
             {/* <Checkbox >Ghi nhớ</Checkbox> */}
-            <a className="block cursor-pointer w-full text-right" href="/forgetPassword">Quên mật khẩu</a>
+            <a
+              className="block w-full text-right cursor-pointer"
+              href="/forgetPassword"
+            >
+              Quên mật khẩu
+            </a>
           </div>
         </Form.Item>
 
-        <div className="text-center mt-6">
-          <button type="submit" className="py-2 w-64 text-xl text-white bg-purple-400 rounded-xl">Đăng nhập</button>
-          <p className="mt-4 text-sm">Bạn chưa có tài khoản? <a href='register' className="underline  cursor-pointer"> Đăng ký</a></p>
+        <div className="mt-6 text-center">
+          <button
+            type="submit"
+            className="w-64 py-2 text-xl text-white bg-purple-400 rounded-xl"
+          >
+            Đăng nhập
+          </button>
+
+          <p className="mt-4 text-sm">
+            Bạn chưa có tài khoản?{" "}
+            <a href="register" className="underline cursor-pointer">
+              {" "}
+              Đăng ký
+            </a>
+          </p>
+        </div>
+        <div className="mt-4 text-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              console.log('Google Login Success:', credentialResponse);
+              const { credential } = credentialResponse;
+              if (credential) {
+                dispatch(dangNhapGoogleAction(credential));
+              }
+            }}
+            onError={(error) => {
+              console.log("Google Login Failed:", error);
+              alert("Đăng nhập Google thất bại! Vui lòng thử lại hoặc kiểm tra cấu hình OAuth.");
+            }}
+            onScriptLoadError={() => {
+              console.log("Google OAuth script failed to load");
+              alert("Không thể tải Google OAuth. Vui lòng kiểm tra kết nối internet.");
+            }}
+            width="300"
+            useOneTap={false}
+            auto_select={false}
+          />
         </div>
       </Form>
     </div>
-  )
+  );
 }
