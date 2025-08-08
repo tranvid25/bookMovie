@@ -16,19 +16,30 @@ class CheckRevokedToken
      */
    public function handle($request, Closure $next)
 {
-    $token = $request->user()->token();
+    try {
+        $token = $request->user()->token();
 
-    if (!$token) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+        if (!$token) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $tokenId = $token->id;
+
+        // Kiểm tra Redis có sẵn không
+        try {
+            if (Redis::get("blacklist:token:$tokenId")) {
+                return response()->json(['message' => 'Token has been revoked'], 401);
+            }
+        } catch (\Exception $e) {
+            // Nếu Redis không có sẵn, bỏ qua việc kiểm tra blacklist
+            \Log::warning('Redis not available for token blacklist check: ' . $e->getMessage());
+        }
+
+        return $next($request);
+    } catch (\Exception $e) {
+        \Log::error('Error in CheckRevokedToken middleware: ' . $e->getMessage());
+        return response()->json(['message' => 'Authentication error'], 401);
     }
-
-    $tokenId = $token->id;
-
-    if (Redis::get("blacklist:token:$tokenId")) {
-        return response()->json(['message' => 'Token has been revoked'], 401);
-    }
-
-    return $next($request);
 }
 
 }

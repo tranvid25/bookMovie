@@ -9,6 +9,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^10.10",
         "laravel/passport": "^12.4",
+        "laravel/reverb": "^1.5",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "predis/predis": "^3.0",

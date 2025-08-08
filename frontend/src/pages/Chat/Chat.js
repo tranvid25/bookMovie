@@ -56,7 +56,8 @@ const Chat = () => {
       broadcaster: "pusher",
       key: "fbf58601d45c833fd72b",
       cluster: "ap1",
-      forceTLS: true,
+      forceTLS: false,
+      encrypted: false,
       authEndpoint: "http://localhost:8000/broadcasting/auth",
       auth: {
         headers: {
@@ -65,7 +66,7 @@ const Chat = () => {
       },
     });
     const channel = echo.join("chat");
-    channel.listen(".UserOnline", (data) => {
+    channel.listen("UserOnline", (data) => {
       setMessages((prev) => [
         ...prev,
         {

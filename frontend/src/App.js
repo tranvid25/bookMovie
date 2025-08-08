@@ -61,7 +61,7 @@ import Rewards from './pages/Rewards/Rewards';
 import TuDongChatWidget from './components/TuDongChatWidget';
 import Province from './pages/Province/Province';
 import ProvinceDetail from './pages/Province/ProvinceDetail';
-
+import PrivateChatPage from './pages/Chat/PrivateChatPage';
 
 export const history = createBrowserHistory();
 
@@ -150,6 +150,7 @@ function App() {
         <AdminTemplate path='/admin/notificationmng' exact Component={NotificationMng} />
 
         <Route path="/chat" component={Chat} />
+        <Route path="/chat-private" component={PrivateChatPage}/>
 
         <HomeTemplate path='/' exact Component={Home} />
         <HomeTemplate path='/search/*' exact Component={Search} />
