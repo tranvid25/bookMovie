@@ -137,6 +137,10 @@ use Illuminate\Support\Facades\Route;
         Route::delete('laydanhsachbinhluan/{id}/delete', [CommentNewsController::class, 'destroy']);
         Route::get('/messages', [ChatController::class, 'index']);
         Route::post('/messages', [ChatController::class, 'store']);
+        Route::post('/messagePrivate',[ChatController::class,'ChatPrivate']);
+        Route::get('/private-messages/{roomId}', [ChatController::class, 'getPrivateMessages']);
+        Route::get('/chatrooms', [ChatController::class, 'getRooms']);
+        Route::post('/chatrooms', [ChatController::class, 'createRoom']);
         //Notification
         Route::get('notification/unread',[PromotionNotificationController::class,'unread']);
         Route::post('notification/create',[PromotionNotificationController::class,'store']);// admin tạo

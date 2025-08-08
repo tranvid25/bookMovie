@@ -13,7 +13,7 @@ import Loading from "./components/Loading/Loading";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <GoogleOAuthProvider 
+    <GoogleOAuthProvider
       clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || "258197998165-sp0qhea21q8hrqo3jboikklukgr74jpa.apps.googleusercontent.com"}
       onScriptLoadError={() => console.log('Google OAuth script failed to load')}
     >

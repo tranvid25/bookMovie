@@ -33,6 +33,8 @@ export default function Header(props) {
             {(userLogin.role === 'Super') ? <Button type="text" className='w-full text-left' href="/admin/moviemng">Super Admin</Button> : ''}
             {(userLogin.role === 'QuanTri') ? <Button type="text" className='w-full text-left' href="/admin/moviemng">Trang Quản Trị</Button> : ''}
             <Button type="text" href="/users/profile" className='w-full text-left'>Trang Cá Nhân</Button>
+            <Button type="text" href="/chat" className='w-full text-left'>💬 Chat Nhóm</Button>
+            <Button type="text" href="/chat-private" className='w-full text-left'>🔒 Chat Riêng Tư</Button>
             <Button type="text" href="/home" className='w-full text-left' onClick={() => {
                 localStorage.removeItem(USER_LOGIN)
                 localStorage.removeItem(TOKEN)
@@ -100,6 +102,16 @@ export default function Header(props) {
                         <li className="flex">
                             <NavLink to="/contact" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Liên Hệ</NavLink>
                         </li>
+                          {!_.isEmpty(userLogin) && (
+                            <>
+                                <li className="flex">
+                                    <NavLink to="/chat" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">💬 Chat</NavLink>
+                                </li>
+                                <li className="flex">
+                                    <NavLink to="/chat-private" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">🔒 Chat Riêng</NavLink>
+                                </li>
+                            </>
+                        )}
                         <li className="flex">
                             <NavLink to="/province" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Tỉnh Thành</NavLink>
                         </li>
