@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 
 services:
   app:
@@ -41,7 +41,7 @@ services:
     container_name: payroll-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 
+      MYSQL_ROOT_PASSWORD:
       MYSQL_DATABASE: payroll
     volumes:
       - mysql-data:/var/lib/mysql
