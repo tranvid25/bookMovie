@@ -141,6 +141,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/private-messages/{roomId}', [ChatController::class, 'getPrivateMessages']);
         Route::get('/chatrooms', [ChatController::class, 'getRooms']);
         Route::post('/chatrooms', [ChatController::class, 'createRoom']);
+        Route::post('/video-call', [ChatController::class, 'voiceCall']);
         //Notification
         Route::get('notification/unread',[PromotionNotificationController::class,'unread']);
         Route::post('notification/create',[PromotionNotificationController::class,'store']);// admin tạo

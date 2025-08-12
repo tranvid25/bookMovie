@@ -30,6 +30,13 @@ Broadcast::channel('promotion-channel', function($user) {
     }
     return false;
 });
-Broadcast::channel('room.{id}', function ($user, $id) {
-    return true; // user có thể join vào bất kì chatroom nào
+Broadcast::channel('room.{roomId}', function ($user, $roomId) {
+    return true; // Hoặc logic xác thực phù hợp
+});
+
+Broadcast::channel('video-call', function($user) {
+    if($user != null) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+    return false;
 });

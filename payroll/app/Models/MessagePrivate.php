@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MessagePrivate extends Model
 {
-    protected $fillable = ['content'];
+    protected $fillable = ['content','voice_url','file_url','file_goc'];
     protected $table = 'message_private';
     public function user(): BelongsTo
     {

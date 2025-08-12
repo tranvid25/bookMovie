@@ -62,7 +62,9 @@ import TuDongChatWidget from './components/TuDongChatWidget';
 import Province from './pages/Province/Province';
 import ProvinceDetail from './pages/Province/ProvinceDetail';
 import PrivateChatPage from './pages/Chat/PrivateChatPage';
-
+// Polyfill process for browser
+import process from 'process';
+window.process = process;
 export const history = createBrowserHistory();
 
 function App() {

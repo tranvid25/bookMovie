@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Events\MessagePosted;
 use App\Events\MessageSent;
 use App\Events\UserOnline;
+use App\Events\VideoSignalEvent;
+use App\Events\VoiceCallEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Chatroom;
 use App\Models\Message;
@@ -65,21 +67,30 @@ class ChatController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
+        // Validate request
+        if (!$request->filled('content') && !$request->hasFile('file')) {
+            return response()->json(['error' => 'Message or file is required'], 422);
+        }
+
         $message = new MessagePrivate();
         $message->room_id = $request->input('room_id', -1);
         $message->user_id = $user->id;
         $message->content = $request->input('content', '');
 
+        // Xử lý file nếu có
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = Str::random(12) . '.' . $file->getClientOriginalExtension();
+            $fileDirectory = 'images/chat/file/';
+            $file->move(public_path($fileDirectory), $fileName);
+            $message->file_url = url($fileDirectory . $fileName);
+            $message->file_goc=$file->getClientOriginalName();
+        }
+
         $message->save();
 
-        // Gửi đến các user khác trong phòng TRỪ user tạo tin nhắn này
-        \Log::info("📤 Broadcasting message to room: " . $message->room_id . " at " . now());
-        try {
-            broadcast(new MessagePosted($message->load('user')))->toOthers();
-            \Log::info("✅ Broadcast completed for room: " . $message->room_id);
-        } catch (\Exception $e) {
-            \Log::error("❌ Broadcast failed: " . $e->getMessage());
-        }
+        // Broadcast event
+        broadcast(new MessagePosted($message->load('user')))->toOthers();
 
         return response()->json(['message' => $message->load('user')]);
     }
@@ -113,7 +124,7 @@ class ChatController extends Controller
 
             return response()->json(['rooms' => $rooms]);
         } catch (\Exception $e) {
-           
+
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
@@ -137,5 +148,29 @@ class ChatController extends Controller
         ]);
 
         return response()->json(['room' => $room]);
+    }
+    public function voiceCall(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $request->validate([
+            'room_id' => 'required|integer',
+            'signal' => 'required',
+            'type' => 'required|in:offer,answer,candidate'
+        ]);
+
+        $data = [
+            'user' => $user,
+            'room_id' => $request->room_id,
+            'signal' => $request->signal,
+            'type' => $request->type
+        ];
+
+        broadcast(new VoiceCallEvent($data))->toOthers();
+
+        return response()->json(['success' => true]);
     }
 }
