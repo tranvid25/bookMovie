@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 
 services:
   app:
@@ -12,14 +12,14 @@ services:
       APP_ENV: production
       APP_DEBUG: 'false'
       APP_KEY: base64:byBqQKXntSXp4Q38k3cj+otmI0QfVi6PzkF5mTH1g8w=
-      APP_URL: http://localhost:8000
+      APP_URL: http://103.77.243.209
 
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: payroll
       DB_USERNAME: root
-      DB_PASSWORD:
+      DB_PASSWORD: casio
 
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: rabbitmq
@@ -41,7 +41,7 @@ services:
     container_name: payroll-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 
+      MYSQL_ROOT_PASSWORD: casio
       MYSQL_DATABASE: payroll
     volumes:
       - mysql-data:/var/lib/mysql
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     ports:
       - "5672:5672"
-      - "15672:15672"   # management UI
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
