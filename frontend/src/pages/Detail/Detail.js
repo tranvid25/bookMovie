@@ -40,11 +40,17 @@ export default function Detail(props) {
     useEffect(() => {
         async function fetchLichChieuCity() {
             try {
+                console.log('Fetching lich chieu for movie ID:', id);
                 const res = await quanLyPhimService.layLichChieuPhimTheoCity(id);
+                console.log('API Response:', res.data);
                 if (res.data.status === 200) {
-                    setLichChieuCity(res.data);
+                    setLichChieuCity(res.data.content);
+                    console.log('Set lich chieu data:', res.data.content);
+                } else {
+                    console.log('API returned status:', res.data.status);
                 }
             } catch (e) {
+                console.error('Error fetching lich chieu:', e);
                 setLichChieuCity({ raps: {}, phim: {} });
             }
         }
@@ -292,14 +298,26 @@ export default function Detail(props) {
                         {selectedTinh && selectedRap && (
                             <div className='mb-4'>
                                 <h4 className='mb-2 font-bold'>Suất chiếu:</h4>
-                                {lichChieuCity.raps[selectedTinh][selectedRap].length === 0 && <p>Không có suất chiếu.</p>}
-                                {lichChieuCity.raps[selectedTinh][selectedRap].map((suat, idx) => (
-                                    <NavLink key={idx} to={`/checkout/${suat.maLichChieu}`}>
-                                        <Tag className='px-3 mr-3 text-lg' color='green'>
-                                            {dayjs(suat.ngayChieu).format('DD-MM-YYYY')} {suat.gioChieu}
-                                        </Tag>
-                                    </NavLink>
-                                ))}
+                                {(() => {
+                                    // Filter chỉ hiển thị suất chiếu trong tương lai
+                                    const futureShowtimes = lichChieuCity.raps[selectedTinh][selectedRap].filter(suat => {
+                                        const showtimeDateTime = dayjs(suat.ngayChieu + ' ' + suat.gioChieu);
+                                        const now = dayjs();
+                                        return showtimeDateTime.isAfter(now);
+                                    });
+
+                                    if (futureShowtimes.length === 0) {
+                                        return <p>Không có suất chiếu trong tương lai.</p>;
+                                    }
+
+                                    return futureShowtimes.map((suat, idx) => (
+                                        <NavLink key={idx} to={`/checkout/${suat.maLichChieu}`}>
+                                            <Tag className='px-3 mr-3 text-lg' color='green'>
+                                                {dayjs(suat.ngayChieu).format('DD-MM-YYYY')} {suat.gioChieu}
+                                            </Tag>
+                                        </NavLink>
+                                    ));
+                                })()}
                             </div>
                         )}
 

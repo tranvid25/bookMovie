@@ -30,6 +30,29 @@ export const dangNhapAction = (thongTinDangNhap) => {
         }
     }
 }
+export const dangNhapGoogleAction = (id_token) => {
+    return async (dispatch) => {
+        try {
+            dispatch(displayLoadingAction)
+            const result = await quanLyNguoiDungService.dangNhapGoogle({ id_token });
+            if (result && result.data && result.data.status === true) {
+                dispatch({
+                    type: DANG_NHAP_ACTION,
+                    thongTinDangNhap: {
+                        accessToken: result.data.token,
+                        user: result.data.user,
+                    },
+                });
+                history.push("home");
+            } else {
+                alert("Đăng nhập Google thất bại");
+            }
+        } catch (error) {
+            console.log(error);
+            alert(error?.response?.data?.message || "Lỗi đăng nhập Google");
+        }
+    }
+}
 
 
 export const dangKyAction = (thongTinDangKy) => {

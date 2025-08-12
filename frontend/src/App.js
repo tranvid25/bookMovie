@@ -57,8 +57,14 @@ import TermsOfTransaction from './pages/Terms/TermsOfTransaction';
 import ForgetPassword from './pages/Login/ForgetPassword';
 import Chat from './pages/Chat/Chat';
 import NotificationMng from './pages/Admin/NotificationMng/NotificationMng';
-
-
+import Rewards from './pages/Rewards/Rewards';
+import TuDongChatWidget from './components/TuDongChatWidget';
+import Province from './pages/Province/Province';
+import ProvinceDetail from './pages/Province/ProvinceDetail';
+import PrivateChatPage from './pages/Chat/PrivateChatPage';
+// Polyfill process for browser
+import process from 'process';
+window.process = process;
 export const history = createBrowserHistory();
 
 function App() {
@@ -76,10 +82,14 @@ function App() {
         draggable
         pauseOnHover
       />
+      <TuDongChatWidget/>
       <Switch>
         <HomeTemplate path='/home' exact Component={Home} />
         <HomeTemplate path='/contact' exact Component={Contact} />
         <HomeTemplate path='/news' exact Component={News} />
+        <HomeTemplate path='/rewards' exact Component={Rewards} />
+        <HomeTemplate path='/province' exact Component={Province}/>
+        <HomeTemplate path='/province/detail/:id' exact Component={ProvinceDetail}/>
         <HomeTemplate path='/news/detail/:id' exact Component={NewsDetail} />
         <MovieTemplate path='/detail/:id' exact Component={Detail} />
         <CheckOutTemplate path='/checkout/:id' exact Component={Checkout} />
@@ -98,6 +108,7 @@ function App() {
         <ProfileTemplate path='/users/profile' exact Component={Profile} />
         <ProfileTemplate path='/users/edit/:id' exact Component={UserEdit} />
         <ProfileTemplate path='/users/ordershistory' exact Component={OrderHistory} />
+        {/* <ProfileTemplate path='/rewards' exact Component={Rewards} /> */}
 
         {/* Nguoi dung - user */}
         <AdminTemplate path='/admin' exact Component={UserMng} />
@@ -141,6 +152,7 @@ function App() {
         <AdminTemplate path='/admin/notificationmng' exact Component={NotificationMng} />
 
         <Route path="/chat" component={Chat} />
+        <Route path="/chat-private" component={PrivateChatPage}/>
 
         <HomeTemplate path='/' exact Component={Home} />
         <HomeTemplate path='/search/*' exact Component={Search} />

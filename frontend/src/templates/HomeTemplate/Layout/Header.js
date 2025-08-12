@@ -33,6 +33,8 @@ export default function Header(props) {
             {(userLogin.role === 'Super') ? <Button type="text" className='w-full text-left' href="/admin/moviemng">Super Admin</Button> : ''}
             {(userLogin.role === 'QuanTri') ? <Button type="text" className='w-full text-left' href="/admin/moviemng">Trang Quản Trị</Button> : ''}
             <Button type="text" href="/users/profile" className='w-full text-left'>Trang Cá Nhân</Button>
+            <Button type="text" href="/chat" className='w-full text-left'>💬 Chat Nhóm</Button>
+            <Button type="text" href="/chat-private" className='w-full text-left'>🔒 Chat Riêng Tư</Button>
             <Button type="text" href="/home" className='w-full text-left' onClick={() => {
                 localStorage.removeItem(USER_LOGIN)
                 localStorage.removeItem(TOKEN)
@@ -86,8 +88,8 @@ export default function Header(props) {
                 <div className="container flex justify-between h-16 mx-auto">
                     <NavLink rel="noopener noreferrer" to="/" aria-label="Back to homepage" className="flex items-center p-2">
                         <div className='d-flex' >
-                            <img src='/img/logo.png' alt='logo' style={{ width: '50px', height: '100%' }} />
-                            <img src='/img/name.png' alt='logo' style={{ width: '100px', height: '100%' }} />
+                            <img src='/img/logo.png' alt='logo' style={{ width: '150px', height: '100%',paddingRight:'5px',borderRadius: '10px' }} />
+                            <img src='/img/name.png' alt='logo' style={{ width: '100px', height: '100%',borderRadius: '10px' }} />
                         </div>
                     </NavLink>
                     <ul className="items-stretch hidden space-x-3 lg:flex ml-20">
@@ -100,7 +102,24 @@ export default function Header(props) {
                         <li className="flex">
                             <NavLink to="/contact" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Liên Hệ</NavLink>
                         </li>
-
+                          {!_.isEmpty(userLogin) && (
+                            <>
+                                <li className="flex">
+                                    <NavLink to="/chat" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">💬 Chat</NavLink>
+                                </li>
+                                <li className="flex">
+                                    <NavLink to="/chat-private" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">🔒 Chat Riêng</NavLink>
+                                </li>
+                            </>
+                        )}
+                        <li className="flex">
+                            <NavLink to="/province" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Tỉnh Thành</NavLink>
+                        </li>
+                        {!_.isEmpty(userLogin) && (
+                            <li className="flex">
+                                <NavLink to="/rewards" style={{ textDecoration: 'none' }} className="flex items-center font-medium -mb-0.5 border-b-2 px-4 border-transparent hover:text-violet-400" activeClassName="border-b-2 text-violet-400 border-violet-600">Quà Tặng</NavLink>
+                            </li>
+                        )}
                     </ul>
 
                     <div className="items-center flex-shrink-0 hidden lg:flex">

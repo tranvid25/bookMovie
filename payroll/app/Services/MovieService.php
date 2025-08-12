@@ -29,8 +29,15 @@ class MovieService
         if (!$movie) return false;
 
         $grouped = [];
+        $now = now();
 
         foreach ($movie->lichchieu as $lich) {
+            // Kiểm tra lịch chiếu có phải trong tương lai không
+            $ngayGioChieu = $lich->ngayChieu . ' ' . $lich->gioChieu;
+            if (strtotime($ngayGioChieu) <= strtotime($now)) {
+                continue; // Bỏ qua lịch chiếu đã qua
+            }
+
             $tenTinh = $lich->rapChieu->tinhthanh->tenTinh ?? 'Không rõ thành phố';
             $tenRap = $lich->rapChieu->tenRap;
 

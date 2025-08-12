@@ -12,10 +12,12 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PromotionNotificationController;
 use App\Http\Controllers\Api\ProvinceController;
 use App\Http\Controllers\Api\RapChieuController;
+use App\Http\Controllers\Api\RewardController;
 use App\Http\Controllers\Api\SeatController;
 use App\Http\Controllers\Api\ShowtimeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\EmployeeController;
+use App\Jobs\SendTestMessageJob;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,17 +34,24 @@ use Illuminate\Support\Facades\Route;
 */
 
         //user
+
+
+    Route::get('/test-rabbitmq', function () {
+    SendTestMessageJob::dispatch('Hello from RabbitMQ!');
+    return 'Job sent!';
+});
+
         Route::get('laydanhsachuser', [UserController::class, 'index']);
         Route::get('laydanhsachuser/{id}', [UserController::class, 'show']);
         Route::post('laydanhsachuser', [UserController::class, 'store']);
         Route::post('laydanhsachuser/{id}/update', [UserController::class, 'update']);
         //Banner
 
-            Route::get('laydanhsachbanner', [BannerController::class, 'index']);
-            Route::post('laydanhsachbanner', [BannerController::class, 'store']);
-            Route::get('laydanhsachbanner/{id}', [BannerController::class, 'show']);
-            Route::post('laydanhsachbanner/{id}/update', [BannerController::class, 'update']);
-            Route::delete('laydanhsachbanner/{id}/delete', [BannerController::class, 'destroy']);
+        Route::get('laydanhsachbanner', [BannerController::class, 'index']);
+        Route::post('laydanhsachbanner', [BannerController::class, 'store']);
+        Route::get('laydanhsachbanner/{id}', [BannerController::class, 'show']);
+        Route::post('laydanhsachbanner/{id}/update', [BannerController::class, 'update']);
+        Route::delete('laydanhsachbanner/{id}/delete', [BannerController::class, 'destroy']);
 
 
         //Review movie;
@@ -105,6 +114,7 @@ use Illuminate\Support\Facades\Route;
     'prefix' => 'auth'
 ], function () {
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('loginGoogle',[AuthController::class,'loginGoogle']);
     Route::post('signup', [AuthController::class, 'signup']);
     Route::post('passwordRetrieval', [AuthController::class, 'passwordRetrieval']);
 
@@ -127,11 +137,26 @@ use Illuminate\Support\Facades\Route;
         Route::delete('laydanhsachbinhluan/{id}/delete', [CommentNewsController::class, 'destroy']);
         Route::get('/messages', [ChatController::class, 'index']);
         Route::post('/messages', [ChatController::class, 'store']);
+        Route::post('/messagePrivate',[ChatController::class,'ChatPrivate']);
+        Route::get('/private-messages/{roomId}', [ChatController::class, 'getPrivateMessages']);
+        Route::get('/chatrooms', [ChatController::class, 'getRooms']);
+        Route::post('/chatrooms', [ChatController::class, 'createRoom']);
+        Route::post('/video-call', [ChatController::class, 'voiceCall']);
         //Notification
         Route::get('notification/unread',[PromotionNotificationController::class,'unread']);
         Route::post('notification/create',[PromotionNotificationController::class,'store']);// admin tạo
         Route::put('notification/{id}/read',[PromotionNotificationController::class,'markAsRead']);
         //Order
         Route::get('laydanhsachdonhang/{id}', [OrderDetailController::class, 'showByUser']);
+        //Rewards - Đổi điểm lấy quà
+        Route::get('rewards', [RewardController::class, 'index']);
+        Route::get('rewards/{id}', [RewardController::class, 'show']);
+        Route::post('rewards/exchange', [RewardController::class, 'exchange']);
+        Route::get('rewards/user/exchanges', [RewardController::class, 'userExchanges']);
+        // Test API - chỉ dùng cho development
+        Route::post('add-test-points', [AuthController::class, 'addTestPoints']);
+        Route::get('laydanhsachdonhang', [OrderDetailController::class, 'index']);
+        Route::post('laydanhsachdonhang', [OrderDetailController::class, 'store']);
+        Route::get('laychitietdonhang/{id}', [OrderDetailController::class, 'show']);
     });
 });

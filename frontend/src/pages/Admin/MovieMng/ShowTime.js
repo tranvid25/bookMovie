@@ -56,7 +56,7 @@ export default function ShowTime(props) {
             } else {
                 alert('Giá vé VIP phải cao hơn giá vé thường')
             }
-            
+
 
         }
     })
@@ -186,14 +186,14 @@ export default function ShowTime(props) {
                         onSubmitCapture={formik.handleSubmit}
                     >
                         <Form.Item label="Cụm rạp">
-                            <Select options={cumRap?.map((cumRap, index) => ({key:index, label: (cumRap.tenRap)+' ('+(cumRap.tinh_thanh[0].tenTinh)+')', value: cumRap.maRap }))} value={formik.values.maRap} onChange={handleChangeCumRap} placeholder="Chọn cụm rạp" />
+                            <Select options={cumRap?.map((cumRap, index) => ({ key: index, label: (cumRap.tenRap) + ' (' + (cumRap.tinh_thanh[0].tenTinh) + ')', value: cumRap.maRap }))} value={formik.values.maRap} onChange={handleChangeCumRap} placeholder="Chọn cụm rạp" />
                         </Form.Item>
                         <Form.Item label="Ngày chiếu">
-                            <Tooltip title="Lưu ý: Chỉ được chọn lịch chiếu trong vòng 40 ngày kể từ ngày khởi chiếu">
-                            {localStorage.getItem('lichChieuEdit')
-                                ? <DatePicker disabledDate={d => !d || d.isBefore(dayjs(ngayKhoiChieu)) || d.isAfter(dayjs(ngayKhoiChieu).add(40,'day')) || d.isBefore(dayjs().add(2,'day'))} value={dayjs(defaultDate, dateFormat)} format={dateFormat} onChange={onChangeDate} onOk={onOkHour} />
-                                : <DatePicker disabledDate={d => !d || d.isBefore(dayjs(ngayKhoiChieu)) || d.isAfter(dayjs(ngayKhoiChieu).add(40,'day')) || d.isBefore(dayjs().add(2,'day'))} format={dateFormat} onChange={onChangeDate} onOk={onOk} />
-                            }
+                            <Tooltip title="Lưu ý: Chỉ được chọn lịch chiếu từ ngày hiện tại trở đi và trong vòng 40 ngày kể từ ngày khởi chiếu">
+                                {localStorage.getItem('lichChieuEdit')
+                                    ? <DatePicker disabledDate={d => !d || d.isBefore(dayjs(ngayKhoiChieu)) || d.isAfter(dayjs(ngayKhoiChieu).add(40, 'day')) || d.isBefore(dayjs(), 'day')} value={dayjs(defaultDate, dateFormat)} format={dateFormat} onChange={onChangeDate} onOk={onOkHour} />
+                                    : <DatePicker disabledDate={d => !d || d.isBefore(dayjs(ngayKhoiChieu)) || d.isAfter(dayjs(ngayKhoiChieu).add(40, 'day')) || d.isBefore(dayjs(), 'day')} format={dateFormat} onChange={onChangeDate} onOk={onOk} />
+                                }
                             </Tooltip>
                         </Form.Item>
 

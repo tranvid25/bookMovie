@@ -1,31 +1,31 @@
-FROM php:8.1-apache
+# Sử dụng PHP 8.2 FPM image chính thức
+FROM php:8.2-fpm
 
-# Cài extension PHP + phpredis
+# Cài các thư viện cần thiết
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip git curl \
-    && docker-php-ext-install pdo pdo_mysql zip \
-    && pecl install redis && docker-php-ext-enable redis
+    git unzip libzip-dev zip libpng-dev libonig-dev libxml2-dev curl \
+    && docker-php-ext-install pdo_mysql zip bcmath mbstring xml tokenizer
 
-# Cài Composer
+# Cài Composer (copy từ image composer chính thức)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+# Tạo thư mục làm việc trong container
+WORKDIR /var/www
 
-# Copy mã nguồn
+# Copy toàn bộ code vào container
 COPY . .
 
-# Cài Laravel và build cache
-RUN composer install --no-dev --optimize-autoloader && \
-    cp .env.example .env && \
-    php artisan key:generate && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan storage:link
+# Chạy composer install, không tải dev packages
+RUN composer install --no-dev --optimize-autoloader
 
-# Cấu hình Apache để Laravel chạy từ public/
-RUN a2enmod rewrite
-COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Cache config, route, view
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 
-EXPOSE 80
-CMD ["apache2-foreground"]
+# Đổi quyền thư mục storage và bootstrap cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Lắng nghe port 9000 của php-fpm
+EXPOSE 9000
+
+# Lệnh chạy PHP-FPM khi container khởi động
+CMD ["php-fpm"]
