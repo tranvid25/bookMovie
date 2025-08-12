@@ -15,9 +15,11 @@ class Province extends Model
     protected $fillable = [
         'maTinh',
         'tenTinh',
+        'hinhAnh',
+        'googlemap'
     ];
     public function province(){
         return $this->hasMany(RapChieu::class,'maTinh','maTinh_id');
     }
-    //1 tỉnh có nhiều rạp 
+    //1 tỉnh có nhiều rạp
 }

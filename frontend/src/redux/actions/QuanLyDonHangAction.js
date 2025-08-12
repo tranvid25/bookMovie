@@ -32,10 +32,12 @@ export const datVeAction = (donHang) => {
                     donHang: result.data.content // Lấy object đơn hàng từ BE
                 });
             }
+
             await dispatch(hideLoadingAction)
             dispatch({ type: CHUYEN_TAB_ACTIVE, number: '3' })
         } catch (error) {
             console.log(error)
+            await dispatch(hideLoadingAction)
         }
     }
 }

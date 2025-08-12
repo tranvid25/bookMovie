@@ -9,6 +9,9 @@ export class QuanLyNguoiDungService extends baseService {
     dangNhap = (thongTinDangNhap) => {
         return this.post(`/api/auth/login`,thongTinDangNhap);
     }
+    dangNhapGoogle=(thongTinDangNhap)=>{
+        return this.post(`/api/auth/loginGoogle`,thongTinDangNhap);
+    }
 
     dangKy = (thongTinDangKy) => {
         return this.post(`/api/auth/signup`,thongTinDangKy);

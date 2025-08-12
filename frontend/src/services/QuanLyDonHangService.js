@@ -7,11 +7,11 @@ export class QuanLyDonHangService extends baseService {
     }
 
     datVe = (donHang) => {
-        return this.post(`/api/laydanhsachdonhang`,donHang);
+        return this.post(`/api/auth/laydanhsachdonhang`,donHang);
     }
 
     layChiTietDonHang = (id ) => {
-        return this.get(`/api/laychitietdonhang/${id}`);
+        return this.get(`/api/auth/laychitietdonhang/${id}`);
     }
 
 

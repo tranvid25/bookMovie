@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessAfterBookingJob;
 use App\Models\Movie;
 use App\Models\OrderDetail;
+use App\Models\PointHistory;
 use App\Models\Seat;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -49,7 +53,6 @@ class OrderDetailController extends Controller
     $validator = Validator::make($request->all(), [
         'maLichChieu' => 'required|exists:showtime,maLichChieu',
         'danhSachGhe' => 'required|string', // chuỗi dạng: "101,102,103"
-        'userId' => 'nullable|exists:users,id',
         'name' => 'required|string|max:255',
         'email' => 'required|email',
     ]);
@@ -61,78 +64,80 @@ class OrderDetailController extends Controller
             'errors' => $validator->errors()
         ], 422);
     }
-
+    DB::beginTransaction();
     // 2. Lấy thông tin lịch chiếu kèm phim và rạp
-    $showtime = Showtime::with(['rapChieu', 'phim'])->where('maLichChieu', $request->maLichChieu)->first();
-    if (!$showtime || !$showtime->rapChieu || !$showtime->phim) {
+    try {
+        $showtime = Showtime::with(['rapChieu', 'phim'])->where('maLichChieu', $request->maLichChieu)->first();
+        if (!$showtime || !$showtime->rapChieu || !$showtime->phim) {
+            DB::rollBack();
+            return response()->json(['status' => 404, 'message' => 'Không tìm thấy lịch chiếu'], 404);
+        }
+
+        // Kiểm tra lịch chiếu có phải trong tương lai không
+        $ngayGioChieu = $showtime->ngayChieu . ' ' . $showtime->gioChieu;
+        $ngayGioHienTai = now();
+
+        if (strtotime($ngayGioChieu) <= strtotime($ngayGioHienTai)) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 400,
+                'message' => 'Không thể đặt vé cho lịch chiếu đã qua hoặc đang diễn ra'
+            ], 400);
+        }
+
+        $arrMaGhe = array_map('intval', explode(',', $request->danhSachGhe));
+
+        // ⚠️ LOCK GHẾ để tránh bị cập nhật trùng
+        $seats = Seat::whereIn('maGhe', $arrMaGhe)
+                     ->where('maLichChieu', $request->maLichChieu)
+                     ->lockForUpdate()
+                     ->get();
+
+        $gheDaDat = $seats->filter(fn($ghe) => $ghe->daDat);
+
+        if ($gheDaDat->count() > 0) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 409,
+                'message' => 'Một số ghế đã được đặt: ' . $gheDaDat->pluck('tenGhe')->implode(', ')
+            ], 409);
+        }
+
+        $tongTien = $seats->sum('giaVe');
+        $danhSachTenGhe = $seats->pluck('tenGhe')->implode(', ');
+
+        $order = OrderDetail::create([
+            'maLichChieu' => $request->maLichChieu,
+            'maPhim' => $showtime->maPhim,
+            'phim' => $showtime->phim->tenPhim,
+            'rapChieu' => $showtime->rapChieu->tenRap,
+            'gioChieu' => $showtime->gioChieu,
+            'ngayChieu' => $showtime->ngayChieu,
+            'danhSachGhe' => $danhSachTenGhe,
+            'tongTien' => $tongTien,
+            'userId' => Auth::id(),
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        // Đánh dấu ghế đã đặt
+        Seat::whereIn('maGhe', $arrMaGhe)->update(['daDat' => 1]);
+        ProcessAfterBookingJob::dispatch($order, Auth::user());
+        DB::commit(); // ✅ Quan trọng: commit sau khi xong mọi thứ
         return response()->json([
-            'status' => 404,
-            'message' => 'Không tìm thấy thông tin suất chiếu, rạp hoặc phim'
-        ], 404);
-    }
+            'status' => 200,
+            'message' => 'Đặt vé thành công!',
+            'content' => $order
+        ]);
 
-    // 3. Xử lý danh sách mã ghế
-    $arrMaGhe = array_map('intval', explode(',', $request->danhSachGhe));
-
-    // 4. Lấy danh sách ghế và kiểm tra ghế đã được đặt
-    $seats = Seat::whereIn('maGhe', $arrMaGhe)
-                ->where('maLichChieu', $request->maLichChieu)
-                ->get();
-
-    $gheDaDat = $seats->filter(fn($ghe) => $ghe->daDat);
-
-    if ($gheDaDat->count() > 0) {
+    } catch (\Exception $e) {
+        DB::rollBack();
         return response()->json([
-            'status' => 409,
-            'message' => 'Một số ghế đã được đặt: ' . $gheDaDat->pluck('tenGhe')->implode(', ')
-        ], 409);
+            'status' => 500,
+            'message' => 'Lỗi hệ thống',
+            'error' => $e->getMessage()
+        ], 500);
     }
-
-    // 5. Tính tổng tiền từ ghế
-    $tongTien = $seats->sum('giaVe');
-    $danhSachTenGhe = $seats->pluck('tenGhe')->implode(', ');
-
-    // 6. Lưu đơn hàng
-    $order = OrderDetail::create([
-        'maLichChieu' => $request->maLichChieu,
-        'maPhim' => $showtime->maPhim,
-        'phim' => $showtime->phim->tenPhim,
-        'rapChieu' => $showtime->rapChieu->tenRap,
-        'gioChieu' => $showtime->gioChieu,
-        'ngayChieu' => $showtime->ngayChieu,
-        'danhSachGhe' => $danhSachTenGhe,
-        'tongTien' => $tongTien,
-        'userId' => $request->userId,
-        'name' => $request->name,
-        'email' => $request->email,
-    ]);
-
-    // 7. Đánh dấu ghế đã đặt
-    Seat::whereIn('maGhe', $arrMaGhe)->update([
-        'daDat' => 1,
-    ]);
-
-    // 8. Gửi email xác nhận
-    Mail::send('mail.sendEmail', [
-        'rapChieu' => $showtime->rapChieu->tenRap,
-        'phim' => $showtime->phim->tenPhim,
-        'gioChieu' => $showtime->gioChieu,
-        'ngayChieu' => $showtime->ngayChieu,
-        'danhSachGhe' => $danhSachTenGhe,
-        'tongTien' => $tongTien,
-        'name' => $request->name,
-        'email' => $request->email,
-    ], function ($message) use ($request) {
-        $message->to($request->email, $request->name)
-                ->subject('PHTV - Thông tin đặt vé');
-    });
-
-    // 9. Trả kết quả
-    return response()->json([
-        'status' => 200,
-        'message' => 'Đặt vé thành công!',
-        'content' => $order
-    ]);
 }
 
 

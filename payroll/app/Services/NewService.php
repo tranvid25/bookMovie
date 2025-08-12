@@ -26,7 +26,7 @@ class NewService
         {
             $file=$data['hinhAnh'];
             $imageName=Str::random(12) . '.' . $file->getClientOriginalExtension();
-            $imageDirectory='images/tintuc';
+            $imageDirectory='images/tintuc/';
             $file->move(public_path($imageDirectory),$imageName);
             $data['hinhAnh']=url($imageDirectory.$imageName);
             $data['fileName']=$imageName;
@@ -43,7 +43,7 @@ class NewService
         if(isset($data['hinhAnh']) && $data['hinhAnh']->isValid())
         {
           $file=$data['hinhAnh'];
-          $imageDirectory='images/tintuc';
+          $imageDirectory='images/tintuc/';
           if($new->hinhAnh){
             $oldImage=public_path(parse_url($new->hinhAnh,PHP_URL_PATH));
             if(fileExists($oldImage))
