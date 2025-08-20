@@ -233,27 +233,23 @@ function Checkout(props) {
       );
     }
     return danhSachGhe.map((ghe, index) => {
-      let classGheVip = ghe.loaiGhe === "vip" ? "seatVip" : "";
-      let classGheDaDat = ghe.nguoiDat !== null ? "seatOccupied" : "";
-      let classGheOtherDat = ghe.nguoiChon !== null ? "seatOtherOccupied" : "";
-
-      let classGheDangDat = "";
-      let indexGheDD = danhSachGheDangChon?.findIndex(
+      const hangGhe = ghe.tenGhe?.charAt(0).toUpperCase();
+      // ghế VIP: I, J, K
+      let classGheVip = ["I", "J", "K"].includes(hangGhe) ? "seatVip" : "";
+      let classGheDaDat = ghe.daDat === 1 ? "seatOccupied" : "";
+      let classGheDangDat = danhSachGheDangChon?.some(
         (gheDD) => gheDD.maGhe === ghe.maGhe
-      );
-      if (indexGheDD != -1) {
-        classGheDangDat = "seatSelected";
-      }
+      )
+        ? "seatSelected"
+        : "";
 
-      let classGheUserDat = "";
-      if (userLogin.id == ghe.nguoiDat) {
-        classGheUserDat = "seatUserOccupied";
-      }
+      let classGheUserDat =
+        userLogin?.id === ghe.nguoiDat ? "seatUserOccupied" : "";
 
       return (
         <Fragment key={index}>
           <Button
-            disabled={ghe.nguoiDat}
+            disabled={ghe.daDat===1}
             type="link"
             className={`seat p-0 ${classGheVip} ${classGheDaDat} ${classGheDangDat} ${classGheUserDat} `}
             onClick={() => {
@@ -261,13 +257,6 @@ function Checkout(props) {
                 type: DAT_VE,
                 gheDuocChon: ghe,
               });
-              // const danhSachGheSelect = new DanhSachGheDangChon();
-              // danhSachGheSelect.maLichChieu = props.match.params.id;
-              // danhSachGheSelect.danhSachGhe = renderSoGhe();
-              // danhSachGheSelect.danhSachMaGhe = renderMaGhe();
-              // danhSachGheSelect.userId = userLogin.id;
-              // console.log('danhSachGheSelect',danhSachGheSelect)
-              // dispatch(chonGheAction(danhSachGheSelect))
             }}
           >
             {ghe.nguoiDat ? (
@@ -312,9 +301,9 @@ function Checkout(props) {
 
   const tongTien =
     danhSachGheDangChon.filter(({ loaiGhe }) => loaiGhe === "thuong").length *
-      lichChieuChiTiet.giaVeThuong +
+    lichChieuChiTiet.giaVeThuong +
     danhSachGheDangChon.filter(({ loaiGhe }) => loaiGhe === "vip").length *
-      lichChieuChiTiet.giaVeVip;
+    lichChieuChiTiet.giaVeVip;
 
   return (
     <div className="container min-h-screen mt-5">
@@ -497,9 +486,9 @@ export function XacNhanThongTin(props) {
                     <Input
                       size="large"
                       onInput={(e) =>
-                        (e.target.value = e.target.value
-                          .replace(/(\d{4})(\d+)/g, "$1 $2")
-                          .trim())
+                      (e.target.value = e.target.value
+                        .replace(/(\d{4})(\d+)/g, "$1 $2")
+                        .trim())
                       }
                       placeholder="Số Thẻ"
                       prefix={<CreditCardOutlined />}
@@ -681,7 +670,7 @@ export function KetQuaDatVe(props) {
                     </div>
                   </div>
                   <div className="row">
-                    {currentArrDonHang.map((item,index) => {
+                    {currentArrDonHang.map((item, index) => {
                       return (
                         <div className="mt-3 col-6 " key={item.maOrder || "nottt"}>
                           <Card
