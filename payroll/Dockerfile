@@ -17,13 +17,14 @@ WORKDIR /var/www
 COPY composer.json composer.lock ./
 
 # Cài dependencies nhưng không chạy script (tránh lỗi artisan chưa có)
+# Cài dependencies nhưng không chạy script (tránh lỗi artisan chưa có)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copy toàn bộ code vào container
 COPY . .
 
-# Chạy lại composer scripts sau khi có code (artisan đã tồn tại)
-RUN composer run-script post-install-cmd --no-dev --optimize-autoloader
+# Chạy lại composer install để scripts (artisan) được thực thi
+RUN composer install --no-dev --optimize-autoloader
 
 # Phân quyền cho Laravel
 RUN chown -R www-data:www-data /var/www \
