@@ -36,6 +36,8 @@ import { TOKEN, USER_LOGIN } from "../../util/settings/config";
 import dayjs from "dayjs";
 import { history } from "./../../App";
 import { DanhSachGheDangChon } from "../../_core/models/DanhSachGheDangChon";
+import PayPalButton from "../../components/PayPalButton";
+import PayPalCheckout from "../../components/PayPalButton";
 const { TabPane } = Tabs;
 
 export default function ChonGhe(props) {
@@ -249,7 +251,7 @@ function Checkout(props) {
       return (
         <Fragment key={index}>
           <Button
-            disabled={ghe.daDat===1}
+            disabled={ghe.daDat === 1}
             type="link"
             className={`seat p-0 ${classGheVip} ${classGheDaDat} ${classGheDangDat} ${classGheUserDat} `}
             onClick={() => {
@@ -301,9 +303,9 @@ function Checkout(props) {
 
   const tongTien =
     danhSachGheDangChon.filter(({ loaiGhe }) => loaiGhe === "thuong").length *
-    lichChieuChiTiet.giaVeThuong +
+      lichChieuChiTiet.giaVeThuong +
     danhSachGheDangChon.filter(({ loaiGhe }) => loaiGhe === "vip").length *
-    lichChieuChiTiet.giaVeVip;
+      lichChieuChiTiet.giaVeVip;
 
   return (
     <div className="container min-h-screen mt-5">
@@ -464,7 +466,7 @@ export function XacNhanThongTin(props) {
           </p>
         </div>
         <div className="col-6">
-          <div className="row">
+          <div className="flex row">
             <div className="mx-auto col-6">
               <h1 className="mb-5 text-xl text-center">
                 THANH TOÁN BẰNG THẺ TÍN DỤNG
@@ -486,9 +488,9 @@ export function XacNhanThongTin(props) {
                     <Input
                       size="large"
                       onInput={(e) =>
-                      (e.target.value = e.target.value
-                        .replace(/(\d{4})(\d+)/g, "$1 $2")
-                        .trim())
+                        (e.target.value = e.target.value
+                          .replace(/(\d{4})(\d+)/g, "$1 $2")
+                          .trim())
                       }
                       placeholder="Số Thẻ"
                       prefix={<CreditCardOutlined />}
@@ -562,6 +564,9 @@ export function XacNhanThongTin(props) {
                   </div>
                 </Form>
               )}
+            </div>
+            <div className="mx-auto col-6">
+            <PayPalCheckout donhang={donhang} />
             </div>
           </div>
         </div>
@@ -672,7 +677,10 @@ export function KetQuaDatVe(props) {
                   <div className="row">
                     {currentArrDonHang.map((item, index) => {
                       return (
-                        <div className="mt-3 col-6 " key={item.maOrder || "nottt"}>
+                        <div
+                          className="mt-3 col-6 "
+                          key={item.maOrder || "nottt"}
+                        >
                           <Card
                             hoverable
                             className="p-2 bg-teal-100 d-flex"
