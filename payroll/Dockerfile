@@ -4,8 +4,9 @@ FROM php:8.2-fpm
 # Cài các thư viện cần thiết
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip libzip-dev zip libpng-dev libonig-dev libxml2-dev curl \
-    && docker-php-ext-install pdo_mysql zip bcmath mbstring xml \
+    && docker-php-ext-install pdo_mysql zip bcmath mbstring xml sockets \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Cài Composer (copy từ image composer chính thức)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
