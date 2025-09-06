@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\FeedBackController;
 use App\Http\Controllers\Api\MovieController;
 use App\Http\Controllers\Api\newsController;
 use App\Http\Controllers\Api\OrderDetailController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PromotionNotificationController;
 use App\Http\Controllers\Api\ProvinceController;
 use App\Http\Controllers\Api\RapChieuController;
@@ -109,7 +110,6 @@ use Illuminate\Support\Facades\Route;
         Route::delete('laydanhsachtinh/{id}/delete', [ProvinceController::class, 'destroy']);
         //Search
         Route::get('/movies/search', [MovieController::class, 'search']);
-
         Route::group([
     'prefix' => 'auth'
 ], function () {
@@ -158,5 +158,12 @@ use Illuminate\Support\Facades\Route;
         Route::get('laydanhsachdonhang', [OrderDetailController::class, 'index']);
         Route::post('laydanhsachdonhang', [OrderDetailController::class, 'store']);
         Route::get('laychitietdonhang/{id}', [OrderDetailController::class, 'show']);
+
+
+        Route::post('/create-order', [PaymentController::class, 'createOrder']);
+        Route::post('/capture-order', [PaymentController::class, 'captureOrder']);
+
+
+
     });
 });

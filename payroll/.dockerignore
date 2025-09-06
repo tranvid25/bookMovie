@@ -1,0 +1,29 @@
+# IDE & system
+.idea
+.vscode
+.git
+.gitignore
+.gitattributes
+
+# Node
+node_modules
+
+# Laravel cache & compiled files
+vendor
+storage/*.key
+storage/framework/*
+storage/logs/*
+bootstrap/cache/*
+
+# Docker files (không cần copy vào image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# System configs tránh ghi đè file container
+php/conf.d/
+*.ini
+
+# Env (tùy chọn: bỏ qua hoặc không)
+# .env
+
