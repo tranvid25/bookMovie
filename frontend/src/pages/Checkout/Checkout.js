@@ -36,6 +36,8 @@ import { TOKEN, USER_LOGIN } from "../../util/settings/config";
 import dayjs from "dayjs";
 import { history } from "./../../App";
 import { DanhSachGheDangChon } from "../../_core/models/DanhSachGheDangChon";
+import PayPalButton from "../../components/PayPalButton";
+import PayPalCheckout from "../../components/PayPalButton";
 const { TabPane } = Tabs;
 
 export default function ChonGhe(props) {
@@ -233,27 +235,23 @@ function Checkout(props) {
       );
     }
     return danhSachGhe.map((ghe, index) => {
-      let classGheVip = ghe.loaiGhe === "vip" ? "seatVip" : "";
-      let classGheDaDat = ghe.nguoiDat !== null ? "seatOccupied" : "";
-      let classGheOtherDat = ghe.nguoiChon !== null ? "seatOtherOccupied" : "";
-
-      let classGheDangDat = "";
-      let indexGheDD = danhSachGheDangChon?.findIndex(
+      const hangGhe = ghe.tenGhe?.charAt(0).toUpperCase();
+      // ghế VIP: I, J, K
+      let classGheVip = ["I", "J", "K"].includes(hangGhe) ? "seatVip" : "";
+      let classGheDaDat = ghe.daDat === 1 ? "seatOccupied" : "";
+      let classGheDangDat = danhSachGheDangChon?.some(
         (gheDD) => gheDD.maGhe === ghe.maGhe
-      );
-      if (indexGheDD != -1) {
-        classGheDangDat = "seatSelected";
-      }
+      )
+        ? "seatSelected"
+        : "";
 
-      let classGheUserDat = "";
-      if (userLogin.id == ghe.nguoiDat) {
-        classGheUserDat = "seatUserOccupied";
-      }
+      let classGheUserDat =
+        userLogin?.id === ghe.nguoiDat ? "seatUserOccupied" : "";
 
       return (
         <Fragment key={index}>
           <Button
-            disabled={ghe.nguoiDat}
+            disabled={ghe.daDat === 1}
             type="link"
             className={`seat p-0 ${classGheVip} ${classGheDaDat} ${classGheDangDat} ${classGheUserDat} `}
             onClick={() => {
@@ -261,13 +259,6 @@ function Checkout(props) {
                 type: DAT_VE,
                 gheDuocChon: ghe,
               });
-              // const danhSachGheSelect = new DanhSachGheDangChon();
-              // danhSachGheSelect.maLichChieu = props.match.params.id;
-              // danhSachGheSelect.danhSachGhe = renderSoGhe();
-              // danhSachGheSelect.danhSachMaGhe = renderMaGhe();
-              // danhSachGheSelect.userId = userLogin.id;
-              // console.log('danhSachGheSelect',danhSachGheSelect)
-              // dispatch(chonGheAction(danhSachGheSelect))
             }}
           >
             {ghe.nguoiDat ? (
@@ -475,7 +466,7 @@ export function XacNhanThongTin(props) {
           </p>
         </div>
         <div className="col-6">
-          <div className="row">
+          <div className="flex row">
             <div className="mx-auto col-6">
               <h1 className="mb-5 text-xl text-center">
                 THANH TOÁN BẰNG THẺ TÍN DỤNG
@@ -573,6 +564,9 @@ export function XacNhanThongTin(props) {
                   </div>
                 </Form>
               )}
+            </div>
+            <div className="mx-auto col-6">
+            <PayPalCheckout donhang={donhang} />
             </div>
           </div>
         </div>
@@ -681,9 +675,12 @@ export function KetQuaDatVe(props) {
                     </div>
                   </div>
                   <div className="row">
-                    {currentArrDonHang.map((item,index) => {
+                    {currentArrDonHang.map((item, index) => {
                       return (
-                        <div className="mt-3 col-6 " key={item.maOrder || "nottt"}>
+                        <div
+                          className="mt-3 col-6 "
+                          key={item.maOrder || "nottt"}
+                        >
                           <Card
                             hoverable
                             className="p-2 bg-teal-100 d-flex"

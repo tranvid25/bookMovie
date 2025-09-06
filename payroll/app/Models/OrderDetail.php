@@ -25,6 +25,11 @@ class OrderDetail extends Model
         'tongTien',
         'userId',
         'name',
-        'email'
+        'email',
+        'status',
+        'paypal_order_id',
+        'payer_email',
+        'payment_method',
+        'paid_at'
     ];
 }

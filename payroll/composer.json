@@ -14,6 +14,7 @@
         "laravel/tinker": "^2.8",
         "predis/predis": "^3.0",
         "pusher/pusher-php-server": "^7.2",
+        "srmklive/paypal": "~3.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^14.2"
     },
     "require-dev": {
